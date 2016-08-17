@@ -1,0 +1,13 @@
+{
+  "name": "yeruhamPhoneBook",
+  "authors": [
+    "daniel erez <daniellevanon@gmail.com>"
+  ],
+  "dependencies": {
+    "request": "*",
+    "csv-write-stream": "*",
+    "striptags": "*",
+    "async": "*",
+    "html-entities": "*"
+  }
+}
