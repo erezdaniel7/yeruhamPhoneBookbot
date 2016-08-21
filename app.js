@@ -154,7 +154,7 @@ function set_telegram_text(content,callback){
 	text = text.replace(/<\/div/g, '\n<\/div');
 	text = text.replace(/<div/g, '\n<\/div');
 	text = text.replace(/<li>/g, '\n* <li>');
-	text = text.replace(/\b0((\d-*){8,9})\b/g, '+972$1').replace(/(\+972\d*)-((\d*)-)?((\d*)-)?/g, '$1$3$5');
+	text = text.replace(/\b0((\d-*){8,9})\b/g, '+972$1').replace(/(\+972\d*)-((\d*)-)?((\d*)-)?/g, '$1$3$5').replace(/(\+972)(\d|\d{2})(\d{7})\b/g, '$1-$2-$3');
 	text = text.replace(/<\/td/g, ' </td');
 	text = text.replace(/<\/th/g, ' </th');
 	text = text.replace(/<\/tr/g, '\n</tr');
