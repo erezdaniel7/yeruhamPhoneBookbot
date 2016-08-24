@@ -171,7 +171,7 @@ function set_telegram_text(content,callback){
 		function(url,callback){
 			url=url.trim();
 			getTinyurl(url,function(tinyurl){
-				text = text.replace(url, tinyurl);
+				text = text.replaceAll(url, " "+tinyurl+" ");
 				callback();
 			})
 		},
@@ -404,3 +404,8 @@ loadFiles(function(){
 	console.log("start");
 	writeToLog("start","",null);
 });
+
+String.prototype.replaceAll = function(search, replacement) {
+    var target = this;
+    return target.split(search).join(replacement);
+};
