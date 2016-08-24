@@ -167,7 +167,11 @@ function set_telegram_text(content,callback){
          ,"g"
        );
 	var urls=text.match(geturl);
-	async.each(urls, 
+	if(!urls) urls=[];
+	urls.sort(function(a, b){
+	  return b.length - a.length;
+	});
+	async.eachSeries(urls, 
 		function(url,callback){
 			url=url.trim();
 			getTinyurl(url,function(tinyurl){
