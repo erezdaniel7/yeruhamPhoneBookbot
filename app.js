@@ -148,8 +148,9 @@ function getMessage(){
 function set_telegram_text(content,callback){
 	var text ="<b>"+content.title+"</b><br>"+content.html;
 	text = text.replace(/\n/g, ' ');
-	text = text.replace(/href="http([^"]*)"[^>]*>([^<]*)</g, '>$2 http$1<');
-	text = text.replace(/href='http([^']*)'[^>]*>([^<]*)</g, '>$2 http$1<');
+	text = text.replace(/\u00a0/g, ' ');
+	text = text.replace(/href="http([^"]*)"[^>]*>([^<(http)]*)</g, '>$2 http$1<');
+	text = text.replace(/href='http([^']*)'[^>]*>([^<(http)]*)</g, '>$2 http$1<');
 
 	text = text.replace(/<\/div/g, '\n<\/div');
 	text = text.replace(/<div/g, '\n<\/div');
@@ -160,8 +161,6 @@ function set_telegram_text(content,callback){
 	text = text.replace(/<\/tr/g, '\n</tr');
 	text = text.replace(/<br/g, '\n<br');
 	text = striptags(text,"<b>");
-	text = text.replace(/\n\s*\n/g, '\n');
-	text = text.replace(/\s*\n\s*/g, '\n');
 	var geturl = new RegExp(
           "(^|[ \t\r\n])((http|https):(([A-Za-z0-9$_.+!*(),;/?:@&~=-])|%[A-Fa-f0-9]{2}){2,}(#([a-zA-Z0-9][a-zA-Z0-9$_.+!*(),;/?:@&~=%-]*))?([A-Za-z0-9$_+!*();/?:~-]))"
          ,"g"
@@ -180,6 +179,8 @@ function set_telegram_text(content,callback){
 			})
 		},
 		function(){
+			text = text.replace(/\n\s*\n/g, '\n');
+			text = text.replace(/\s*\n\s*/g, '\n');		
 			content.telegram_text=text;
 			callback();
 		}
@@ -190,6 +191,10 @@ function set_telegram_text(content,callback){
 function getTinyurl(url,callback){
 	if (tinyurls[url])
 		callback(tinyurls[url]);
+	else if(url.search("www.facebook.com")>=0 || url.search("sites.google.com/site/yeruchamphonebook/")>0 || url.search("https://twitter.com/")>=0  ){
+		tinyurls[url]="";
+		callback(tinyurls[url]);
+	}
 	else{
 		request('http://tinyurl.com/api-create.php?url='+entities.decode(url), function (error, response, body) {
 			if (!error && response.statusCode == 200 && body!='""Error""') {
