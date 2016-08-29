@@ -51,7 +51,8 @@ function getMessage(){
 					if (row.message != undefined && row.message.contact != undefined && row.message.contact.user_id==row.message.from.id){
 						if (validateNumber(row.message.contact.phone_number)){
 							userList[row.message.contact.user_id]=row.message.contact.phone_number;
-							sendMessage(row.message.chat.id,"האימות בוצע בהצלחה. \nהקלד שם לחיפוש");
+							sendMessage(row.message.chat.id,"האימות בוצע בהצלחה. ");
+							sendMessage(row.message.chat.id,"הקלד שם לחיפוש או בצע חיפוש בכל שיחת צאט",{inline_keyboard: [[{"text": "חיפוש inline","switch_inline_query": ""}]]});
 							writeToLog("active user success",row.message.contact.phone_number,row);
 							saveUserList();
 						}
@@ -130,7 +131,7 @@ function getMessage(){
 						}
 						else{
 							writeToLog("find_inline_sendContactRequest",row.inline_query.query,row);
-							answerInlineQuery(row.inline_query.id,null,true)
+							answerInlineQuery(row.inline_query.id,null,true);
 						}
 					}
 					else{
