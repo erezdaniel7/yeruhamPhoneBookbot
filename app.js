@@ -52,7 +52,7 @@ function getMessage(){
 						if (validateNumber(row.message.contact.phone_number)){
 							userList[row.message.contact.user_id]=row.message.contact.phone_number;
 							sendMessage(row.message.chat.id,"האימות בוצע בהצלחה. ");
-							sendMessage(row.message.chat.id,"הקלד שם לחיפוש או בצע חיפוש בכל שיחת צאט",{inline_keyboard: [[{"text": "חיפוש inline","switch_inline_query": ""}]]});
+							sendMessage(row.message.chat.id,"הקלד שם לחיפוש");
 							writeToLog("active user success",row.message.contact.phone_number,row);
 							saveUserList();
 						}
@@ -213,11 +213,11 @@ function getTinyurl(url,callback){
 }
 
 function sendContent(chatID,content){
-	sendMessage(chatID,content.telegram_text)
+	sendMessage(chatID,content.telegram_text,{inline_keyboard: [[{text: "share",switch_inline_query: content.title}]]})
 }
 
 function sendContactRequest(chatID){
-	sendMessage(chatID,"נא ללחוץ על הכפתור מטה בשביל לאמת את מספר הטלפון.",{keyboard: [[{text: "שלח מספר טלפון",request_contact: true}]]});
+	sendMessage(chatID,"נא ללחוץ על הכפתור מטה בשביל לאמת את מספר הטלפון.",{keyboard: [[{text: "שלח מספר טלפון",request_contact: true}]],resize_keyboard:true});
 }
 
 function showListContent(chatID,list){
