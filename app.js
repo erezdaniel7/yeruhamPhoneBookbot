@@ -39,7 +39,11 @@ function updatePhonebook(callback){
 function getMessage(){
 	var now=Date.now();
 	// longPolling api
-	request('https://api.telegram.org/bot'+config.botToken+'/getUpdates?offset='+lastUpdateID+'&timeout='+(first?0:10000), function (error, response, body) {
+	var options = {
+		url:  'https://api.telegram.org/bot'+config.botToken+'/getUpdates?offset='+lastUpdateID+'&timeout='+(first?0:10000),
+		timeout: 10001*1000
+	}
+	request(options, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			data=JSON.parse(body);	
 			for(var i=0;i<data.result.length;i++){
