@@ -14,7 +14,11 @@ var first=true;
 var userList={};
 
 function updatePhonebook(callback){
-	request('https://script.googleusercontent.com/macros/echo?user_content_key=v4rN8LfTupMB5BjVBkq1wVfnq3BSjY8GxbUv78jqbfvM_HPnLyLercbYXRJU9MSt_CVCWoOvZmgFwiJWuU53uLRo4raI0zolm5_BxDlH2jW0nuo2oDemN9CCS2h10ox_1xSncGQajx_ryfhECjZEnG9dQciN2XmMsbkBBTQnYpwHEK5xcmv6-BEVOyJJbdMymwMWJ4hrAWXopN3YEEwwiyNrHjD4-88NJ0-vvvFHWKo&lib=Myhj4Xa1LxkXTs5EmJ-HTwox32lPoSxpO', function (error, response, body) {
+	request({
+		url: 'https://yeruham-phone-book.vercel.app/api/allPages',
+		method: 'POST',
+		headers: { cookie: config.loginCookie }
+	}, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
 			body=body.trim();
 			body=body.substring(18);
@@ -196,7 +200,7 @@ function set_telegram_text(content,callback){
 function getTinyurl(url,callback){
 	if (tinyurls[url])
 		callback(tinyurls[url]);
-	else if(url.search("www.facebook.com")>=0 || url.search("sites.google.com/site/yeruchamphonebook/")>0 || url.search("https://twitter.com/")>=0  ){
+	else if(url.search("www.facebook.com")>=0 || url.search("yeruham-phone-book.vercel.app")>0 || url.search("https://twitter.com/")>=0  ){
 		tinyurls[url]="";
 		callback(tinyurls[url]);
 	}
