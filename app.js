@@ -3,8 +3,7 @@ var csvWriter = require('csv-write-stream');
 var fs = require("fs");
 var striptags = require('striptags');
 var async = require('async');
-var Entities = require('html-entities').XmlEntities;
-var entities = new Entities();
+var decode = require('html-entities').decode;
 var config = require('./config');
 
 var phonebook=[];
@@ -20,8 +19,6 @@ function updatePhonebook(callback){
 		headers: { cookie: config.loginCookie }
 	}, function (error, response, body) {
 		if (!error && response.statusCode == 200) {
-			body=body.trim();
-			body=body.substring(18);
 			newPhoneBook=JSON.parse(body).pages;
 			async.each(newPhoneBook, set_telegram_text,
 				function(data){
@@ -205,9 +202,9 @@ function getTinyurl(url,callback){
 		callback(tinyurls[url]);
 	}
 	else{
-		request('http://tinyurl.com/api-create.php?url='+entities.decode(url), function (error, response, body) {
+		request('http://tinyurl.com/api-create.php?url='+decode(url), function (error, response, body) {
 			if (!error && response.statusCode == 200 && body!='""Error""') {
-				tinyurls[url]=body.substr(7);
+				tinyurls[url]=body;
 				callback(tinyurls[url]);
 				saveTinyurl();
 				writeToLog("getTinyurl",url,body);
@@ -221,7 +218,7 @@ function getTinyurl(url,callback){
 }
 
 function sendContent(chatID,content){
-	sendMessage(chatID,content.telegram_text,{inline_keyboard: [[{text: "share",switch_inline_query: content.title}]]})
+	sendMessage(chatID,content.telegram_text.substr(0, 4000),{inline_keyboard: [[{text: "share",switch_inline_query: content.title}]]})
 }
 
 function sendContactRequest(chatID){
@@ -231,7 +228,7 @@ function sendContactRequest(chatID){
 function showListContent(chatID,list){
 	var inline_keyboard=[];
 	for(var i=0;i<list.length;i++){
-		inline_keyboard.push([{"text": list[i].title,"callback_data": list[i].name}]);
+		inline_keyboard.push([{"text": list[i].title,"callback_data": list[i]._id}]);
 	}
 	var text ="נמצאו "+list.length+" תוצאות";
 	sendMessage(chatID,text,{inline_keyboard: inline_keyboard});
@@ -242,9 +239,9 @@ function showListContentInline(inline_query_id,list){
 	for(var i=0;i<list.length;i++){
 		results.push({
 				type:"article",
-				id:list[i].name,
+				id:list[i]._id,
 				title:list[i].title,
-				description : list[i].text, 
+				description : removeHTMLTags(list[i].html), 
 				input_message_content:{
 					message_text: list[i].telegram_text,
 					parse_mode: "html"
@@ -259,7 +256,7 @@ function validateNumber(number) {
 
     for (var i = 0; i < phonebook.length; ++i) {
         var p = phonebook[i];
-        if (p.text.replace(/[-\.]/g, '').indexOf(number) >= 0) {
+        if (p.html.replace(/[-\.]/g, '').indexOf(number) >= 0) {
             return true;
         }
     }
@@ -274,7 +271,7 @@ function find(word){
 		var p = phonebook[i];
 		var count=0;
 		for (var j=0;j<split.length; j++){
-			if (p.title.indexOf(split[j]) >= 0 || p.text.indexOf(split[j]) >= 0) {
+			if (p.title.indexOf(split[j]) >= 0 || p.html.indexOf(split[j]) >= 0) {
 				count++
 			}	
 		}
@@ -284,13 +281,20 @@ function find(word){
 	return ans;
 }
 
-function getContent(name){
+function getContent(id){
     for (var i = 0; i < phonebook.length; ++i) {
-        if (phonebook[i].name==name) {
+        if (phonebook[i]._id==id) {
             return phonebook[i];
         }
     }
     return null;
+}
+
+function removeHTMLTags(html){
+	let text = html.replace(/<[^>]*>/gm, "\n");
+	text = text.replace(/  +/g, ' ');
+	text = text.replace(/[\n]+/ig, "\n");
+	return text;
 }
 
 function sendMessage(chatID,text,reply_markup){

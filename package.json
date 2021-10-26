@@ -4,10 +4,10 @@
     "daniel erez <daniellevanon@gmail.com>"
   ],
   "dependencies": {
-    "request": "*",
-    "csv-write-stream": "*",
-    "striptags": "*",
     "async": "*",
-    "html-entities": "*"
+    "csv-write-stream": "*",
+    "html-entities": "*",
+    "request": "*",
+    "striptags": "*"
   }
 }
